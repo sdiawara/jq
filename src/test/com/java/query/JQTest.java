@@ -106,7 +106,7 @@ public class JQTest {
 
 		assertFalse(all.isEmpty());
 	}
-
+	
 	private Tata newTata() {
 		Tata tata = new Tata();
 		tata.setId(25);

@@ -1,5 +1,7 @@
 package com.java.query;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,34 +10,39 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.java.query.anotation.Column;
 import com.java.query.anotation.Table;
 
 public class JQ<T> {
-	private static final String SELECT_FROM = "select * from ";
-	private static final String REPLACE_INTO = "replace into ";
-	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private static final String DB_URL = "jdbc:mysql://localhost/toto";
-	private static final String USER = "root";
-	private static final String PASS = "root";
-
+	private static final String SELECT_FROM = "SELECT * FROM ";
+	private static final String REPLACE_INTO = "REPLACE INTO ";
+	private final String username;
+	private final String password;
+	private final String url;
+	
 	private Connection conn;
 	private PreparedStatement stmt;
 	private Class<? extends T> class1;
 
 	private int index = 0;
 
-	static {
-		try {
-			Class.forName(JDBC_DRIVER);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("PLease check JDBC dependancy");
-		}
-	}
-
 	public JQ(Class<T> class1) {
 		this.class1 = class1;
+		Properties properties = new Properties();
+		try {
+			properties.load(this.getClass().getClassLoader().getResourceAsStream("jq.properties"));
+			String driver = properties.getProperty("jq.driver");
+			this.username = properties.getProperty("jq.database.username");
+			this.password = properties.getProperty("jq.database.password");
+			this.url = properties.getProperty("jq.database.url");
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("PLease check JDBC dependancy");
+		} catch (IOException e) {
+			throw new RuntimeException("Le fichier de configuration doit être définit " + e.getMessage());
+		}
 	}
 
 	private JQ<T> filter(String column, Object value) {
@@ -154,7 +161,7 @@ public class JQ<T> {
 
 	private void initializeConnection() throws SQLException {
 		if (null == conn) {
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			conn = DriverManager.getConnection(url, username, password);
 		}
 	}
 
@@ -164,7 +171,7 @@ public class JQ<T> {
 		}
 		return stmt.executeQuery(SELECT_FROM + getTableName());
 	}
-	
+
 	public List<T> list() {
 		List<T> items = new ArrayList<T>();
 		try {
