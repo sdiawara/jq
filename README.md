@@ -1,2 +1,2 @@
-jq
+jq (Java Query)
 ==
