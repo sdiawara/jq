@@ -5,17 +5,23 @@ Example:
 --
 
 - Define Object
+```
 @Table(value = "tata") // optionnal 
 class Titi {
 	private long id;
 	private String test;
 }
+```
 
 
 - Get first tata or titi according Titi is defined with @Table annotation
-	JQ<Titi> jq = new JQ<Titi>(Titi.class);
+```
+  JQ<Titi> jq = new JQ<Titi>(Titi.class);
   Titi titi = jq.list();
+```
 
 - Get all 
+```
 	JQ<Titi> jq = new JQ<Titi>(Titi.class);
   List<Titi> titis = jq.list();
+```
