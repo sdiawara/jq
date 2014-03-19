@@ -35,4 +35,6 @@ jq.save(titi);
 ```
 
 - Delete
+```
 jq.delete(titi);
+```
