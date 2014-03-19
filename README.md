@@ -8,20 +8,31 @@ Example:
 ```
 @Table(value = "tata") // optionnal 
 class Titi {
-	private long id;
-	private String test;
+   private long id;
+   private String test;
 }
 ```
 
 
 - Get first tata or titi according Titi is defined with @Table annotation
 ```
-  JQ<Titi> jq = new JQ<Titi>(Titi.class);
-  Titi titi = jq.list();
+JQ<Titi> jq = new JQ<Titi>(Titi.class);
+Titi titi = jq.list();
 ```
 
 - Get all 
 ```
-	JQ<Titi> jq = new JQ<Titi>(Titi.class);
-  List<Titi> titis = jq.list();
+JQ<Titi> jq = new JQ<Titi>(Titi.class);
+List<Titi> titis = jq.list();
 ```
+- Save or update
+```
+JQ<Titi> jq = new JQ<Titi>(Titi.class);
+Titi titi = new Titi();
+titi.setId(25);
+titi.setTest("5555");
+jq.save(titi);
+```
+
+- Delete
+jq.delete(titi);
