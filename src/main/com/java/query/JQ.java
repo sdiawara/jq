@@ -1,6 +1,5 @@
 package com.java.query;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -32,7 +31,7 @@ public class JQ<T> {
 		this.class1 = class1;
 		Properties properties = new Properties();
 		try {
-			properties.load(this.getClass().getClassLoader().getResourceAsStream("jq.properties"));
+			properties.load(getClass().getResourceAsStream("jq.properties"));
 			String driver = properties.getProperty("jq.driver");
 			this.username = properties.getProperty("jq.database.username");
 			this.password = properties.getProperty("jq.database.password");
