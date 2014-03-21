@@ -31,7 +31,7 @@ public class JQ<T> {
 		this.class1 = class1;
 		Properties properties = new Properties();
 		try {
-			properties.load(getClass().getResourceAsStream("jq.properties"));
+			properties.load(getClass().getClassLoader().getResourceAsStream("jq.properties"));
 			String driver = properties.getProperty("jq.driver");
 			this.username = properties.getProperty("jq.database.username");
 			this.password = properties.getProperty("jq.database.password");
