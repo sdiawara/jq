@@ -5,7 +5,7 @@ Example:
 --
 
 - Define Object
-```
+```java
 @Table(value = "tata") // optionnal 
 class Titi {
    private long id;
@@ -15,18 +15,18 @@ class Titi {
 
 
 - Get first tata or titi according Titi is defined with @Table annotation
-```
+```java
 JQ<Titi> jq = new JQ<Titi>(Titi.class);
 Titi titi = jq.list();
 ```
 
 - Get all 
-```
+```java
 JQ<Titi> jq = new JQ<Titi>(Titi.class);
 List<Titi> titis = jq.list();
 ```
 - Save or update
-```
+```java
 JQ<Titi> jq = new JQ<Titi>(Titi.class);
 Titi titi = new Titi();
 titi.setId(25);
@@ -35,6 +35,6 @@ jq.save(titi);
 ```
 
 - Delete
-```
+```java
 jq.delete(titi);
 ```
