@@ -1,3 +1,9 @@
 .idea/
 *.iml
 target/
+.classpath
+.project
+.settings*
+target
+*.md.html
+

@@ -1,20 +1,17 @@
 package com.java.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import com.java.query.annotation.Column;
+import com.java.query.annotation.Table;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.java.query.anotation.Column;
-import com.java.query.anotation.Table;
+import static org.junit.Assert.*;
 
 public class JQTest {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -23,7 +20,7 @@ public class JQTest {
 	static final String PASS = "root";
 	private Connection conn;
 	private Statement stmt;
-	private JQ<Tata>  jq;
+	private JQ<Person>  jq;
 
 	@Before
 	public void setUp() throws Exception {
@@ -32,108 +29,107 @@ public class JQTest {
 		Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		stmt = conn.createStatement();
-		stmt.executeUpdate("DROP DATABASE IF EXISTS toto ");
-		stmt.executeUpdate("CREATE DATABASE toto ");
-		stmt.executeUpdate("use toto");
-		stmt.executeUpdate("CREATE TABLE tata (id int, test varchar(10))");
-		stmt.executeUpdate("INSERT INTO tata (id, test ) values(10, 'test')");
-		stmt.executeUpdate("INSERT INTO tata (id, test ) values(12, 'test12')");
+		stmt.executeUpdate("use test");
+		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS person (id int, name varchar(10))");
+		stmt.executeUpdate("INSERT INTO person (id, name ) values(10, 'test')");
+		stmt.executeUpdate("INSERT INTO person (id, name ) values(12, 'test12')");
 
-		jq = new JQ<Tata>(Tata.class);
+		jq = new JQ<Person>(Person.class);
 	}
-
+	
 	@Test
 	public void testList() {
-		List<Tata> all = jq.list();
+		List<Person> all = jq.list();
 
 		assertFalse(all.isEmpty());
 		assertEquals(10, all.get(0).getId());
-		assertEquals("test", all.get(0).getTest());
+		assertEquals("test", all.get(0).getName());
 	}
 
 	@Test
 	public void testFirst() {
-		Tata tata = jq.first();
+		Person person = jq.first();
 
-		assertNotNull(tata);
-		assertEquals(10, tata.getId());
-		assertEquals("test", tata.getTest());
+		assertNotNull(person);
+		assertEquals(10, person.getId());
+		assertEquals("test", person.getName());
 	}
 
 	
 	@Test
 	public void testWhere() {
-		Tata tata = jq.where("test", "test12").first();
+		Person person = jq.where("name", "test12").first();
 
-		assertEquals(12, tata.getId());
-		assertEquals("test12", tata.getTest());
+		assertEquals(12, person.getId());
+		assertEquals("test12", person.getName());
 	}
 
 	@Test
 	public void testSave() {
-		Tata tata = newTata();
+		Person person = newPerson();
 
-		jq.save(tata);
+		jq.save(person);
 
 		assertEquals(3, jq.list().size());
-		assertEquals("5555", jq.list().get(2).getTest());
+		assertEquals("sdiawara", jq.list().get(2).getName());
 		assertEquals(25, jq.list().get(2).getId());
 	}
 	
 	@Test
 	public void testDelete() {
-		Tata tata = addTata();
+		Person person = addPerson();
 
-		jq.delete(tata);
+		jq.delete(person);
 
 		assertEquals(2, jq.list().size());
 	}
 
 	@Test
 	public void testCanHaveTableByAnomation() throws Exception {
-		JQ<Titi> jq = new JQ<Titi>(Titi.class);
+		JQ<You> jq = new JQ<You>(You.class);
 		
-		List<Titi> all = jq.list();
+		List<You> all = jq.list();
 
 		assertFalse(all.isEmpty());
 	}
 
 	@Test
 	public void testCanHaveColumnNameByAnomation() throws Exception {
-		JQ<Pipi> jq = new JQ<Pipi>(Pipi.class);
+		JQ<French> jq = new JQ<French>(French.class);
 		
-		List<Pipi> all = jq.list();
+		List<French> all = jq.list();
 
 		assertFalse(all.isEmpty());
 	}
 	
-	private Tata newTata() {
-		Tata tata = new Tata();
-		tata.setId(25);
-		tata.setTest("5555");
-		return tata;
+	private Person newPerson() {
+		Person person = new Person();
+		person.setId(25);
+		person.setName("sdiawara");
+		return person;
 	}
 
-	private Tata addTata() {
-		Tata tata = new Tata();
-		tata.setId(25);
-		tata.setTest("5555");
+	private Person addPerson() {
+		Person person = new Person();
+		person.setId(25);
+		person.setName("sdiawara");
 
-		jq.save(tata);
-		return tata;
+		jq.save(person);
+		return person;
 	}
 
 	@After
 	public void after() throws Exception {
+		stmt.executeUpdate("DROP TABLE IF EXISTS person");
 		conn.close();
 		stmt.close();
 	}
 
 }
 
-class Tata {
+class Person {
 	private long id;
-	private String test;
+	private String name;
 
 	// private Titi titi;
 
@@ -145,27 +141,27 @@ class Tata {
 		this.id = id;
 	}
 
-	public String getTest() {
-		return test;
+	public String getName() {
+		return name;
 	}
 
-	public void setTest(String test) {
-		this.test = test;
+	public void setName(String name) {
+		this.name = name;
 	}
 }
 
-@Table(value = "tata")
-class Titi {
+@Table(name = "person")
+class You {
 	@SuppressWarnings("unused")
 	private long id;
 	@SuppressWarnings("unused")
+	private String name;
+}
+
+@Table(name = "person")
+class French {
+	@SuppressWarnings("unused")
+	private long id;
+	@Column(name ="name")
 	private String test;
-}
-
-@Table(value = "tata")
-class Pipi {
-	@SuppressWarnings("unused")
-	private long id;
-	@Column(value ="test")
-	private String column;
 }

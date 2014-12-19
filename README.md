@@ -1,40 +1,38 @@
 jq (Java Query)
 ==
 Jq is a light data access objet using mysql. You just define your data base structure and just use java to access data base. It's recommanded for small project.
-Example:
---
-
+####Example:
 - Define Object
-```
-@Table(value = "tata") // optionnal 
-class Titi {
+```java
+@Table(name = "a_persons") // optionnal 
+class Person {
    private long id;
    private String test;
 }
 ```
 
 
-- Get first tata or titi according Titi is defined with @Table annotation
-```
-JQ<Titi> jq = new JQ<Titi>(Titi.class);
-Titi titi = jq.list();
+- Get first a_persons or person according Person is defined with @Table annotation
+```java
+JQ<Person> jq = new JQ<Person>(Person.class);
+Person person = jq.list();
 ```
 
 - Get all 
-```
-JQ<Titi> jq = new JQ<Titi>(Titi.class);
-List<Titi> titis = jq.list();
+```java
+JQ<Person> jq = new JQ<Person>(Person.class);
+List<Person> persons = jq.list();
 ```
 - Save or update
-```
-JQ<Titi> jq = new JQ<Titi>(Titi.class);
-Titi titi = new Titi();
-titi.setId(25);
-titi.setTest("5555");
-jq.save(titi);
+```java
+JQ<Person> jq = new JQ<Person>(Person.class);
+Person person = new Person();
+person.setId(25);
+person.setName("5555");
+jq.save(Person);
 ```
 
 - Delete
-```
-jq.delete(titi);
+```java
+jq.delete(person);
 ```

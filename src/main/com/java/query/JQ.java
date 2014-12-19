@@ -1,26 +1,27 @@
 package com.java.query;
 
+import com.java.query.annotation.Column;
+import com.java.query.annotation.Table;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import com.java.query.anotation.Column;
-import com.java.query.anotation.Table;
-
 public class JQ<T> {
+	private static final String JQ_PROPERTIES = "jq.properties";
+	private static final String JQ_DATABASE_URL = "jq.database.url";
+	private static final String JQ_DATABASE_PASSWORD = "jq.database.password";
+	private static final String JQ_DRIVER = "jq.driver";
+	private static final String JQ_DATABASE_USERNAME = "jq.database.username";
 	private static final String SELECT_FROM = "SELECT * FROM ";
 	private static final String REPLACE_INTO = "REPLACE INTO ";
 	private final String username;
 	private final String password;
 	private final String url;
-	
+
 	private Connection conn;
 	private PreparedStatement stmt;
 	private Class<? extends T> class1;
@@ -31,12 +32,12 @@ public class JQ<T> {
 		this.class1 = class1;
 		Properties properties = new Properties();
 		try {
-			properties.load(getClass().getResourceAsStream("jq.properties"));
-			String driver = properties.getProperty("jq.driver");
-			this.username = properties.getProperty("jq.database.username");
-			this.password = properties.getProperty("jq.database.password");
-			this.url = properties.getProperty("jq.database.url");
-			Class.forName(driver);
+			properties.load(getClass().getClassLoader().getResourceAsStream(JQ_PROPERTIES));
+			this.username = properties.getProperty(JQ_DATABASE_USERNAME);
+			this.password = properties.getProperty(JQ_DATABASE_PASSWORD);
+			this.url = properties.getProperty(JQ_DATABASE_URL);
+
+			Class.forName(properties.getProperty(JQ_DRIVER));
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("PLease check JDBC dependancy");
 		} catch (IOException e) {
@@ -87,9 +88,10 @@ public class JQ<T> {
 				columnName.append(f.getName());
 
 				columnValue.append(spacer);
-				columnValue.append(f.get(e));
+				columnValue.append("'" + f.get(e) + "'");
 				spacer = " , ";
 			}
+			spacer = ")";
 			queryBuilder.append(columnName).append(")");
 			queryBuilder.append(" values ");
 			queryBuilder.append(columnValue).append(")");
@@ -129,7 +131,7 @@ public class JQ<T> {
 			f.setAccessible(true);
 			queryBuilder.append(spacer);
 			queryBuilder.append(f.getName()).append("=");
-			queryBuilder.append(f.get(item));
+			queryBuilder.append("'" + f.get(item) + "'");
 			spacer = " and ";
 		}
 		return queryBuilder.toString();
@@ -144,12 +146,12 @@ public class JQ<T> {
 
 	private String getColumnName(Field f) {
 		Column annotation = f.getAnnotation(Column.class);
-		return annotation == null ? f.getName() : annotation.value();
+		return annotation == null ? f.getName() : annotation.name();
 	}
 
 	private String getTableName() {
 		Table annotation = class1.getAnnotation(Table.class);
-		return annotation == null ? class1.getSimpleName().toLowerCase() : annotation.value();
+		return annotation == null ? class1.getSimpleName().toLowerCase() : annotation.name();
 	}
 
 	private void initializeStatement(String sql) throws SQLException {
