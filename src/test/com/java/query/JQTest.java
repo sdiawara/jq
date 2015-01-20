@@ -26,19 +26,19 @@ public class JQTest {
 	public void setUp() throws Exception {
 		conn = null;
 		stmt = null;
-		Class.forName("com.mysql.jdbc.Driver");
+		Class.forName(JDBC_DRIVER);
 		conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		stmt = conn.createStatement();
 		stmt.executeUpdate("use test");
 		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS person (id int, name varchar(10))");
-		stmt.executeUpdate("INSERT INTO person (id, name ) values(10, 'test')");
-		stmt.executeUpdate("INSERT INTO person (id, name ) values(12, 'test12')");
+		stmt.executeUpdate("INSERT INTO person (id, name ) values (10, 'test')");
+		stmt.executeUpdate("INSERT INTO person (id, name ) values (12, 'test12')");
 
 		jq = new JQ<Person>(Person.class);
 	}
 	
 	@Test
-	public void testList() {
+	public void list() {
 		List<Person> all = jq.list();
 
 		assertFalse(all.isEmpty());
@@ -47,7 +47,7 @@ public class JQTest {
 	}
 
 	@Test
-	public void testFirst() {
+	public void first() {
 		Person person = jq.first();
 
 		assertNotNull(person);
@@ -57,7 +57,7 @@ public class JQTest {
 
 	
 	@Test
-	public void testWhere() {
+	public void where() {
 		Person person = jq.where("name", "test12").first();
 
 		assertEquals(12, person.getId());
@@ -65,7 +65,7 @@ public class JQTest {
 	}
 
 	@Test
-	public void testSave() {
+	public void save() {
 		Person person = newPerson();
 
 		jq.save(person);
@@ -76,7 +76,7 @@ public class JQTest {
 	}
 	
 	@Test
-	public void testDelete() {
+	public void delete() {
 		Person person = addPerson();
 
 		jq.delete(person);
@@ -85,7 +85,7 @@ public class JQTest {
 	}
 
 	@Test
-	public void testCanHaveTableByAnomation() throws Exception {
+	public void tableAnnomation() throws Exception {
 		JQ<You> jq = new JQ<You>(You.class);
 		
 		List<You> all = jq.list();
@@ -94,7 +94,7 @@ public class JQTest {
 	}
 
 	@Test
-	public void testCanHaveColumnNameByAnomation() throws Exception {
+	public void columnNameAnnomation() throws Exception {
 		JQ<French> jq = new JQ<French>(French.class);
 		
 		List<French> all = jq.list();

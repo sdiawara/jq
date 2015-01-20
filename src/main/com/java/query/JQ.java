@@ -14,7 +14,7 @@ public class JQ<T> {
 	private static final String JQ_PROPERTIES = "jq.properties";
 	private static final String JQ_DATABASE_URL = "jq.database.url";
 	private static final String JQ_DATABASE_PASSWORD = "jq.database.password";
-	private static final String JQ_DRIVER = "jq.driver";
+	private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	private static final String JQ_DATABASE_USERNAME = "jq.database.username";
 	private static final String SELECT_FROM = "SELECT * FROM ";
 	private static final String REPLACE_INTO = "REPLACE INTO ";
@@ -24,20 +24,20 @@ public class JQ<T> {
 
 	private Connection conn;
 	private PreparedStatement stmt;
-	private Class<? extends T> class1;
+	private Class<T> class1;
 
 	private int index = 0;
 
 	public JQ(Class<T> class1) {
 		this.class1 = class1;
-		Properties properties = new Properties();
 		try {
+		    Properties properties = new Properties();
 			properties.load(getClass().getClassLoader().getResourceAsStream(JQ_PROPERTIES));
 			this.username = properties.getProperty(JQ_DATABASE_USERNAME);
 			this.password = properties.getProperty(JQ_DATABASE_PASSWORD);
 			this.url = properties.getProperty(JQ_DATABASE_URL);
 
-			Class.forName(properties.getProperty(JQ_DRIVER));
+			Class.forName(JDBC_DRIVER);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("PLease check JDBC dependancy");
 		} catch (IOException e) {
@@ -168,7 +168,7 @@ public class JQ<T> {
 
 	private ResultSet getResultSet() throws SQLException {
 		if (stmt instanceof PreparedStatement) {
-			return ((PreparedStatement) stmt).executeQuery();
+			return stmt.executeQuery();
 		}
 		return stmt.executeQuery(SELECT_FROM + getTableName());
 	}
