@@ -16,8 +16,8 @@ import static org.junit.Assert.*;
 public class JQTest {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	static final String DB_URL = "jdbc:mysql://localhost/";
-	static final String USER = "root";
-	static final String PASS = "root";
+	static final String USER = "travis";
+	static final String PASS = "";
 	private Connection conn;
 	private Statement stmt;
 	private JQ<Person>  jq;
@@ -29,14 +29,14 @@ public class JQTest {
 		Class.forName(JDBC_DRIVER);
 		conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		stmt = conn.createStatement();
-		stmt.executeUpdate("use test");
+		stmt.executeUpdate("use jq_test");
 		stmt.executeUpdate("CREATE TABLE IF NOT EXISTS person (id int, name varchar(10))");
 		stmt.executeUpdate("INSERT INTO person (id, name ) values (10, 'test')");
 		stmt.executeUpdate("INSERT INTO person (id, name ) values (12, 'test12')");
 
 		jq = new JQ<Person>(Person.class);
 	}
-	
+
 	@Test
 	public void list() {
 		List<Person> all = jq.list();
