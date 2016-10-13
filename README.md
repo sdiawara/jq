@@ -17,7 +17,7 @@ class Person {
 - Get first a_persons or person according Person is defined with @Table annotation
 ```java
 JQ<Person> jq = new JQ<Person>(Person.class);
-Person person = jq.list();
+Person person = jq.first();
 ```
 
 - Get all 
